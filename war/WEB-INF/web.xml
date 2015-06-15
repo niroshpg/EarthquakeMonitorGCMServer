@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+<!-- 2:17 17/05/2015 -->
+
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	
+	
+	 <listener>
+    <listener-class>
+      com.niroshpg.android.gcm.ApiKeyInitializer
+    </listener-class>
+  </listener>
+
+  <servlet>
+    <servlet-name>RegisterServlet</servlet-name>
+    <servlet-class>
+      com.niroshpg.android.gcm.RegisterServlet
+    </servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>RegisterServlet</servlet-name>
+    <url-pattern>/register</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>UnregisterServlet</servlet-name>
+    <servlet-class>
+      com.niroshpg.android.gcm.UnregisterServlet
+    </servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>UnregisterServlet</servlet-name>
+    <url-pattern>/unregister</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>SendAllMessagesServlet</servlet-name>
+    <servlet-class>
+      com.niroshpg.android.gcm.SendAllMessagesServlet
+    </servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>SendAllMessagesServlet</servlet-name>
+    <url-pattern>/sendAll</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>SendMessageServlet</servlet-name>
+    <servlet-class>
+      com.niroshpg.android.gcm.SendMessageServlet
+    </servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>SendMessageServlet</servlet-name>
+    <url-pattern>/send</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>HomeServlet</servlet-name>
+    <servlet-class>
+      com.niroshpg.android.gcm.HomeServlet
+    </servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>HomeServlet</servlet-name>
+    <url-pattern>/home</url-pattern>
+  </servlet-mapping>
+  
+  
+    <servlet>
+    <servlet-name>GMailAPISampleServlet</servlet-name>
+    <servlet-class>
+      com.niroshpg.android.gmail.GMailAPISampleServlet
+    </servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>GMailAPISampleServlet</servlet-name>
+    <url-pattern>/login</url-pattern>
+  </servlet-mapping>
+  
+  
+    <servlet>
+    <servlet-name>PlusSampleServlet</servlet-name>
+    <servlet-class>com.niroshpg.android.gmail.PlusSampleServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PlusSampleServlet</servlet-name>
+    <url-pattern>/plussampleservlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>PlusSampleAuthCallbackServlet</servlet-name>
+    <servlet-class>com.niroshpg.android.gmail.PlusSampleAuthCallbackServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PlusSampleAuthCallbackServlet</servlet-name>
+    <url-pattern>/oauth2callback</url-pattern>
+  </servlet-mapping>
+  
+  <!-- The following ensures the user will be logged in to a Google Account by redirecting 
+    them to the sign-in page if not. 
+    For more information, see https://developers.google.com/appengine/docs/java/config/webxml -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>any</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>*</role-name>
+    </auth-constraint>
+  </security-constraint>
+  
+  
+    <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>register</web-resource-name>
+      <url-pattern>/register</url-pattern>
+    </web-resource-collection>
+   
+  </security-constraint>
+  
+  <security-constraint>
+        <web-resource-collection>
+           <web-resource-name>send</web-resource-name>
+            <url-pattern>/send/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+</web-app>

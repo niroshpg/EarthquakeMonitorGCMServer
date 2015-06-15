@@ -1,0 +1,217 @@
+                                                                                                                                                                                                                                                              
+Delivered-To: nirosh.gunaratne@gmail.com
+Received: by 10.66.6.41 with SMTP id x9csp908273pax;
+        Sat, 13 Jun 2015 23:41:49 -0700 (PDT)
+X-Received: by 10.60.160.65 with SMTP id xi1mr6605974oeb.17.1434264109183;
+        Sat, 13 Jun 2015 23:41:49 -0700 (PDT)
+Return-Path: <+caf_=nirosh.gunaratne=gmail.com@gmail.com>
+Received: from mail-oi0-x235.google.com (mail-oi0-x235.google.com. [2607:f8b0:4003:c06::235])
+        by mx.google.com with ESMTPS id o10si6035326obi.22.2015.06.13.23.41.48
+        for <nirosh.gunaratne@gmail.com>
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 13 Jun 2015 23:41:49 -0700 (PDT)
+Received-SPF: pass (google.com: domain of +caf_=nirosh.gunaratne=gmail.com@gmail.com designates  as permitted sender) client-ip=
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of +caf_=nirosh.gunaratne=gmail.com@gmail.com designates  as permitted sender) smtp.mail=niroshpg+caf_=nirosh.gunaratne=gmail.com@gmail.com;
+       dkim=pass header.i=@amazonses.com
+Received: by mail-oi0-x235.google.com with SMTP id 
+        for <nirosh.gunaratne@gmail.com>; Sat, 13 Jun 2015 23:41:48 -0700 (PDT)
+X-Received: by 10.182.112.138 with SMTP id ;
+        Sat, 13 Jun 2015 23:41:48 -0700 (PDT)
+X-Forwarded-To: nirosh.gunaratne@gmail.com
+X-Forwarded-For:  nirosh.gunaratne@gmail.com
+Delivered-To: 
+Received: by 10.60.103.106 with SMTP id ;
+        Sat, 13 Jun 2015 23:41:48 -0700 (PDT)
+X-Received: by 10.52.171.199 with SMTP id ;
+        Sat, 13 Jun 2015 23:41:47 -0700 (PDT)
+Return-Path:
+Received: from a10-15.smtp-out.amazonses.com (a10-15.smtp-out.amazonses.com. [54.240.10.15])
+        by mx.google.com
+
+From: ens@ens.usgs.gov (USGS ENS)
+To: niroshpg@gmail.com
+Reply-To: <ens@ens.usgs.gov>
+Subject: 2015-06-14 06:19:46 (M5.0) SOLOMON ISLANDS -11.4 163.2 (86232)
+Mime-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="=_xxx_msgseparator"
+Message-ID: <0000014df0cd757c-13ed279b-c201-4e2f-82db-034e87497fb5-000000@email.amazonses.com>
+Date: Sun, 14 Jun 2015 06:41:46 +0000
+X-SES-Outgoing: 2015.06.14-54.240.10.15
+Feedback-ID: 1.us-east-1.r5s3SJhYp3vyrwdVWNdt2AgfN6PuVZlIan0rYNmIjZc=:AmazonSES
+
+This is a MIME encoded message.
+
+--=_xxx_msgseparator
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+                     == PRELIMINARY EARTHQUAKE REPORT ==
+
+
+
+Region:                           SOLOMON ISLANDS
+Geographic coordinates:           11.434S, 163.240E
+Magnitude:                        5.0
+Depth:                            35 km
+Universal Time (UTC):             14 Jun 2015  06:19:46
+Time near the Epicenter:          14 Jun 2015  17:19:47
+Local standard time in your area: 14 Jun 2015  16:19:46
+
+Location with respect to nearby cities:
+180 km (112 mi) SE of Kirakira, Solomon Islands
+422 km (262 mi) ESE of Honiara, Solomon Islands
+621 km (385 mi) NW of Luganville, Vanuatu
+886 km (549 mi) NW of Port-Vila, Vanuatu
+1025 km (636 mi) SE of Arawa, Papua New Guinea
+
+
+ADDITIONAL EARTHQUAKE PARAMETERS
+________________________________
+event ID                     :  us 20002ppz
+
+This is a computer-generated message and has not yet been reviewed by a
+seismologist.
+For subsequent updates, maps, and technical information, see:
+http://earthquake.usgs.gov/earthquakes/eventpage/us20002ppz
+or
+http://earthquake.usgs.gov/
+
+ 
+
+DISCLAIMER: https://sslearthquake.usgs.gov/ens/help.html?page=help#disclaimer
+
+<br>
+This email was sent to <br>
+<br>
+You requested mail for events between -90.0/90.0 latitude and 
+180.0/-180.0 longitude (Default World)<br>
+for M5.0 at all times.  <br>
+<br>
+<br>
+To change your parameters, go to:<br>
+<br>
+https://sslearthquake.usgs.gov/ens/<br>
+<br>
+To unsubscribe, send a one-line reply to this message with:<br>
+<br>
+STOP niroshpg@gmail.com<br>
+
+
+
+--=_xxx_msgseparator
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+<html>
+<body>
+	
+<style type="text/css">
+        body {font: 1.1em/1.3 arial,helvetica,sans-serif;}
+        table {font:1.2em/1.3 arial,helvetica,sans-serif;}
+	caption {
+		padding: 0;
+		margin: 0;
+		font-weight: bold;
+		text-align: left;
+	}
+	th, td {
+		vertical-align: top;
+		text-align: left;
+		padding: 3px 6px;
+		font: .9em/1.3;
+	}
+	th { background-color: #D3E3F0; }
+	td { background-color: #EEEEEE; }
+	ul { margin:0; padding:0; }
+	li { list-style:none; margin:0; }
+        img {border: none;}
+        a img { border: none; }
+</style>
+
+<a href="http://earthquake.usgs.gov/earthquakes/eventpage/us20002ppz#maps"><img src="http://earthquake.usgs.gov/images/globes/-10_165.jpg" hspace="5" vspace="5" align="right" alt="Globe with Earthquake Location" /></a>
+
+<h1>M5.0 - SOLOMON ISLANDS</h1>
+
+<table cellpadding="2" cellspacing="1">
+	<thead>
+		<caption>Preliminary Earthquake Report</caption>
+	</thead>
+	<tbody>
+		<tr>
+			<td valign="top">Magnitude</td>
+			<td>5.0</td>
+		</tr>
+		<tr>
+			<td valign="top">Date-Time</td>
+			<td>
+				<ul>
+					<li>14 Jun 2015  06:19:46 UTC</li>
+					<li>14 Jun 2015  17:19:47 near epicenter</li>
+					<li>14 Jun 2015  16:19:46 standard time in your timezone</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top">Location</td>
+			<td>11.434S 163.240E</td>
+		</tr>
+		<tr>
+			<td valign="top">Depth</td>
+			<td>35 km</td>
+		</tr>
+		<tr>
+			<td valign="top">Distances</td>
+			<td><ul><li>180 km (112 mi) SE of Kirakira, Solomon Islands<li>422 km (262 mi) ESE of Honiara, Solomon Islands<li>621 km (385 mi) NW of Luganville, Vanuatu<li>886 km (549 mi) NW of Port-Vila, Vanuatu<li>1025 km (636 mi) SE of Arawa, Papua New Guinea</ul></td>
+		</tr>	
+		<tr>
+			<td valign="top">Location Uncertainty</td>
+			<td>Horizontal: 9.2 km; Vertical 2.0 km</td>
+		</tr>
+		<tr>
+			<td valign="top">Parameters</td>
+			<td>
+				Nph = 166; Dmin = 422.6 km; Rmss = 1.21 seconds; Gp = 82&deg;<br />
+				Version = 
+			</td>
+		</tr>
+		<tr>
+			<td valign="top">Event ID</td>
+			<td>us 20002ppz <em></em></td>
+		</tr>
+	</tbody>
+</table>
+
+
+<div>
+	<p>
+		For updates, maps, and technical information, see:
+		<a href="http://earthquake.usgs.gov/earthquakes/eventpage/us20002ppz">Event Page</a> or 
+		<a href="http://earthquake.usgs.gov">USGS Earthquake Hazards Program</a><br />
+	 <br><br />
+	<a href="https://sslearthquake.usgs.gov/ens/help.html?page=help#disclaimer">Disclaimer</a></p>
+
+        <p><br>
+This email was sent to <br>
+<br>
+You requested mail for events between -90.0/90.0 latitude and 
+180.0/-180.0 longitude (Default World)<br>
+for M5.0 at all times.  <br>
+<br>
+<br>
+To change your parameters, go to:<br>
+<br>
+https://sslearthquake.usgs.gov/ens/<br>
+<br>
+To unsubscribe, send a one-line reply to this message with:<br>
+<br>
+STOP <br>
+</p>
+</div>
+
+</body>
+</html>
+
+
+--=_xxx_msgseparator--
