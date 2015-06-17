@@ -96,6 +96,8 @@ public class PlusSampleServlet extends HttpServlet {
   private static final long serialVersionUID = 1;
   private static final String APP_NAME = "earthquakemonitorapp";
   
+  private static int count = 0;
+  
   private static final Logger logger =
 	      Logger.getLogger(MessageUtilityTest.class.getName());
 
@@ -109,76 +111,83 @@ public class PlusSampleServlet extends HttpServlet {
     GoogleAuthorizationCodeFlow authFlow = GmailUtils.newFlow();
     
     UserService userService = UserServiceFactory.getUserService();
-    
-    Credential credential = authFlow.loadCredential(userService.getCurrentUser().getUserId());
+    Credential credential = null;
+    if(userService != null)
+    {
+    	String userId = userService.getCurrentUser().getUserId();
+    	Datastore.saveUserId(userId);
+     credential = authFlow.loadCredential(userId);
 
-    //
-    if (credential == null) {
-    	//
-      // If we don't have a token in store, redirect to authorization screen.
-    	logger.warning("auth flow started ...");
-      resp.sendRedirect(
-          authFlow.newAuthorizationUrl().setRedirectUri(GmailUtils.getRedirectUri(req)).build());
-      return;
-    }
-//    try{
-//    	credential.refreshToken();
-//    }
-//    catch(TokenResponseException e){
-//        resp.sendRedirect(
-//                authFlow.newAuthorizationUrl().setRedirectUri(GmailUtils.getRedirectUri(req)).build());
-//        return;
-//    }
+     //
+     if (credential == null) {
+     	//
+       // If we don't have a token in store, redirect to authorization screen.
+     	logger.warning("auth flow started ...");
+       resp.sendRedirect(
+           authFlow.newAuthorizationUrl().setRedirectUri(GmailUtils.getRedirectUri(req)).build());
+       return;
+     }
+//     try{
+//     	credential.refreshToken();
+//     }
+//     catch(TokenResponseException e){
+//         resp.sendRedirect(
+//                 authFlow.newAuthorizationUrl().setRedirectUri(GmailUtils.getRedirectUri(req)).build());
+//         return;
+//     }
+     
+ 	// Create a new authorized Gmail API client
+ 	Gmail service = new Gmail.Builder(GmailUtils.HTTP_TRANSPORT, GmailUtils.JSON_FACTORY, credential)
+ 		    .setApplicationName(APP_NAME).build();
+    // Make the API call
+ 	BigInteger startHistoryId = null;
+ 	
+ 	//service.users().getProfile("me").setRequestHeaders(service.users().getProfile("me").getRequestHeaders().)
+ 	
+ 	startHistoryId = getHistoryId(service, "me",credential);
+ 	logger.warning("hid[url]= " + startHistoryId);
+ 	List<Label> lableList = listLabels(service,"me");
+ 	
+ 	List<Message> messegeList = listMessagesWithLabels(
+ 			service,
+ 			"me",
+ 			Arrays.asList(getLableIdForName(lableList,"EQM")/*,
+ 					getLableIdForName(lableList,"UNREAD")*/
+ 					)
+ 			);
+ 	
+ 	logger.warning("store messages for processing ... ");
+ 	for(Message message : messegeList)
+ 	{
+ 		
+ 		//Message detailMessage = getMessage(service, "me", message.getId());
+ 		String messageBody ="";
+ 		try {
+ 			MimeMessage mimeMessage = getMimeMessage(service, "me", message.getId());
+ 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+ 			mimeMessage.writeTo(baos);
+ 			messageBody = baos.toString();
+ 		} catch (MessagingException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
+ 		//logger.warning("working "+detailMessage.getSnippet()+" ... ");
+ 		//logger.warning("messageBody= "+messageBody+" ... ");
+ 		
+ 		//String messageBody = StringUtils.newStringUtf8(Base64.decodeBase64(detailMessage.getRaw()));//StringUtils.newStringUtf8(detailMessage.getPayload().getBody().decodeData()/*Base64.decodeBase64(detailMessage.getPayload().getBody().decodeData())*/);
+ 		//String messageBody = StringUtils.newStringUtf8(detailMessage.getPayload().getBody().decodeData());
+ 		String extractedMsgBody = MessageUtility.extractData(messageBody);
+ 		//logger.warning("adding "+extractedMsgBody+" ... ");
+ 		Datastore.addMessage(extractedMsgBody);		
+ 	}
+ 	
+ 	logger.warning("invoke send all");
+ 	sendMessagesToAll();
+ 	logger.warning("removing label from messages ...");
+ 	removeUnRead(service, "me", messegeList);
     
-	// Create a new authorized Gmail API client
-	Gmail service = new Gmail.Builder(GmailUtils.HTTP_TRANSPORT, GmailUtils.JSON_FACTORY, credential)
-		    .setApplicationName(APP_NAME).build();
-   // Make the API call
-	BigInteger startHistoryId = null;
-	
-	//service.users().getProfile("me").setRequestHeaders(service.users().getProfile("me").getRequestHeaders().)
-	
-	startHistoryId = getHistoryId(service, "me",credential);
-	logger.warning("hid[url]= " + startHistoryId);
-	List<Label> lableList = listLabels(service,"me");
-	
-	List<Message> messegeList = listMessagesWithLabels(
-			service,
-			"me",
-			Arrays.asList(getLableIdForName(lableList,"EQM")/*,
-					getLableIdForName(lableList,"UNREAD")*/
-					)
-			);
-	
-	logger.warning("store messages for processing ... ");
-	for(Message message : messegeList)
-	{
-		
-		//Message detailMessage = getMessage(service, "me", message.getId());
-		String messageBody ="";
-		try {
-			MimeMessage mimeMessage = getMimeMessage(service, "me", message.getId());
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			mimeMessage.writeTo(baos);
-			messageBody = baos.toString();
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//logger.warning("working "+detailMessage.getSnippet()+" ... ");
-		//logger.warning("messageBody= "+messageBody+" ... ");
-		
-		//String messageBody = StringUtils.newStringUtf8(Base64.decodeBase64(detailMessage.getRaw()));//StringUtils.newStringUtf8(detailMessage.getPayload().getBody().decodeData()/*Base64.decodeBase64(detailMessage.getPayload().getBody().decodeData())*/);
-		//String messageBody = StringUtils.newStringUtf8(detailMessage.getPayload().getBody().decodeData());
-		String extractedMsgBody = MessageUtility.extractData(messageBody);
-		//logger.warning("adding "+extractedMsgBody+" ... ");
-		Datastore.addMessage(extractedMsgBody);		
-	}
-	
-	logger.warning("invoke send all");
-	sendMessagesToAll();
-	logger.warning("removing label from messages ...");
-	removeUnRead(service, "me", messegeList);
+
+
 	
 	//List<History> historyList = null;
 	//if(messegeList != null && messegeList.size() > 1)
@@ -245,7 +254,17 @@ public class PlusSampleServlet extends HttpServlet {
  		        + "this sample</a></div>");
  		    writer.println("<div id=\"main\"/>");
  		    writer.println("</body></html>");
- 		    
+    }
+    else{
+    		PrintWriter writer = resp.getWriter();
+    		writer.println("<!doctype html><html><head>");
+		    writer.println("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">");
+		    writer.println("<title>" + APP_NAME + "</title>");
+
+		    writer.println("</head><body>");
+		    writer.println("<h2>user service not found</h2>");
+		    writer.println("</body></html>");
+    }
 
   }
   private void sendMessagesToAll()

@@ -43,8 +43,10 @@ public final class Datastore {
   public static final int MULTICAST_SIZE = 1000;
   private static final String DEVICE_TYPE = "Device";
   private static final String MESSAGE_TYPE = "Message";
+  private static final String USERID_TYPE = "UserId";
   private static final String MESSAGE_CONTENT_PROPERTY = "messageContent";
   private static final String DEVICE_REG_ID_PROPERTY = "regId";
+  private static final String USERID_CONTENT_PROPERTY = "userIdContent";
 
   private static final String MULTICAST_TYPE = "Multicast";
   private static final String MULTICAST_REG_IDS_PROPERTY = "regIds";
@@ -99,6 +101,21 @@ public final class Datastore {
 //	      }
 	      Entity entity = new Entity(MESSAGE_TYPE);
 	      entity.setProperty(MESSAGE_CONTENT_PROPERTY, message);
+	      datastore.put(entity);
+	      txn.commit();
+	    } finally {
+	      if (txn.isActive()) {
+	        txn.rollback();
+	      }
+	    }
+	  }
+  
+   public static void saveUserId(String id) {
+	    
+	    Transaction txn = datastore.beginTransaction();
+	    try {
+	      Entity entity = new Entity(USERID_TYPE);
+	      entity.setProperty(USERID_CONTENT_PROPERTY, id);
 	      datastore.put(entity);
 	      txn.commit();
 	    } finally {
@@ -236,6 +253,27 @@ public final class Datastore {
 	    return messages;
 	  }
 
+  public static String getUserId() {
+	    List<String> ids;
+	    Transaction txn = datastore.beginTransaction();
+	    try {
+	      Query query = new Query(USERID_TYPE);
+	      Iterable<Entity> entities =
+	          datastore.prepare(query).asIterable(DEFAULT_FETCH_OPTIONS);
+	      ids = new ArrayList<String>();
+	      for (Entity entity : entities) {
+	        String userId = (String) entity.getProperty(USERID_CONTENT_PROPERTY);
+	        ids.add(userId);
+	      }
+	      txn.commit();
+	    } finally {
+	      if (txn.isActive()) {
+	        txn.rollback();
+	      }
+	    }
+	    return ids.get(0);
+	  }
+  
   /**
    * Gets the number of total devices.
    */

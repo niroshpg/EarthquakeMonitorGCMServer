@@ -97,7 +97,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
   </servlet-mapping>
   
   
-    <servlet>
+  <servlet>
     <servlet-name>PlusSampleServlet</servlet-name>
     <servlet-class>com.niroshpg.android.gmail.PlusSampleServlet</servlet-class>
   </servlet>
@@ -105,6 +105,16 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <servlet-name>PlusSampleServlet</servlet-name>
     <url-pattern>/plussampleservlet</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>CronHandlerServlet</servlet-name>
+    <servlet-class>com.niroshpg.android.gmail.CronHandlerServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CronHandlerServlet</servlet-name>
+    <url-pattern>/cron</url-pattern>
+  </servlet-mapping>
+  
   <servlet>
     <servlet-name>PlusSampleAuthCallbackServlet</servlet-name>
     <servlet-class>com.niroshpg.android.gmail.PlusSampleAuthCallbackServlet</servlet-class>
@@ -135,7 +145,17 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     </web-resource-collection>
    
   </security-constraint>
-  
+
+      <security-constraint>
+        <web-resource-collection>
+           <web-resource-name>cron</web-resource-name>
+            <url-pattern>/cron</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    
   <security-constraint>
         <web-resource-collection>
            <web-resource-name>send</web-resource-name>
