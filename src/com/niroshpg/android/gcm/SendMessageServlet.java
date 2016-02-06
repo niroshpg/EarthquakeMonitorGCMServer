@@ -15,14 +15,6 @@
  */
 package com.niroshpg.android.gcm;
 
-import com.google.android.gcm.server.Constants;
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.MulticastResult;
-import com.google.android.gcm.server.Result;
-import com.google.android.gcm.server.Sender;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -34,6 +26,23 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.android.gcm.server.Constants;
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.MulticastResult;
+import com.google.android.gcm.server.Result;
+import com.google.android.gcm.server.Sender;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
 /**
  * Servlet that sends a message to a device.
@@ -117,7 +126,7 @@ public class SendMessageServlet extends BaseServlet {
   }
 
   private Message createMessage() {
-    Message message = new Message.Builder().addData("test-key", "test-value").build();
+    Message message = new Message.Builder().addData("content", "test-value").build();
     return message;
   }
   
@@ -131,8 +140,8 @@ public class SendMessageServlet extends BaseServlet {
 		  Gson gson = new Gson();
 	        Type type = new TypeToken<Map<String, String>>(){}.getType();
 	        Map<String, String> map = gson.fromJson(messageContent, type);
-	        logger.warning("building gcm with content : " + messageContent +"...");
-	    Message message = new Message.Builder().addData("test-key", messageContent)
+	        logger.warning("building gcm with content : " + messageContent +" ...");
+	    Message message = new Message.Builder().addData("content", messageContent)
 	    		.addData("magnitude", map.get("magnitude"))
 	    		.addData("cordinates",  map.get("cordinates"))
 	    		.addData("depth",  map.get("depth")).build();
@@ -179,18 +188,189 @@ public class SendMessageServlet extends BaseServlet {
     }
   }
 
+  private Polygon createPolygon(JSONObject polygonJson)
+  {
+	final GeometryFactory geometryFactory = new GeometryFactory();
+	final ArrayList<Coordinate> points = new ArrayList<Coordinate>();	    
+	    
+    try {
+    	JSONArray regionPoygon = (JSONArray) polygonJson.get("regionPolygon");
+    	logger.warning("regionPoygon  points = " + regionPoygon.length() );
+    	for(int i=0; i<regionPoygon.length();i++ )
+    	{
+    		JSONArray coordPpoint = (JSONArray) regionPoygon.get(i);
+    		 // logger.warning("processing  " + coordPpoint.toString() + " ...");
+    		  
+    		  JSONObject latJsonObj = (JSONObject) coordPpoint.get(0);
+    		  JSONObject lngJsonObj = (JSONObject) coordPpoint.get(0);
+    		  
+    		Double lat = latJsonObj.getDouble("lat");
+    		Double lng = lngJsonObj.getDouble("lng"); 
+    		//logger.warning("latitude = "+ lat + ", longitude =  " +lng);
+    		
+    		points.add(new Coordinate(lat,lng));
+    	}
+		
+	} catch (JSONException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+ 
+
+    final Polygon polygon = geometryFactory.createPolygon(new LinearRing(new CoordinateArraySequence(points
+        .toArray(new Coordinate[points.size()])), geometryFactory), null);
+
+    return polygon;
+  }
+  
+  protected boolean isLocationWithinPolygonBounds(Polygon polygon,String coordStr)
+  {
+	  final GeometryFactory geometryFactory = new GeometryFactory();
+	  
+	  Double lat = 0.0;
+	  Double lng = 0.0;
+	  
+	  String[] coordArrayStrs = coordStr.split(",");
+	  String latStr = coordArrayStrs[0].trim();
+	 
+	  lat = Double.parseDouble(latStr.substring(0,latStr.length()-1));
+	
+	  if( latStr.charAt(latStr.length()-1) == 'S')
+	  {
+		  lat = -lat;
+	  }
+	  
+	  String lngStr = coordArrayStrs[1].trim();
+	  lng = Double.parseDouble(lngStr.substring(0,lngStr.length()-1));
+	  if(lngStr.charAt(lngStr.length()-1) == 'W')
+	  {
+		  lng = -lng;
+	  }
+
+      final Coordinate coord = new Coordinate(lat, lng);
+      final Point point = geometryFactory.createPoint(coord);
+      
+      logger.warning(" point : X = " + point.getX() +", Y = "+ point.getY()+", str =  "+ point.toString() );
+      
+      boolean isWithinPoint =point.within(polygon);
+      
+      if(!isWithinPoint)
+      {
+    	  logger.warning(" point is outside the polygon : " + polygon.toString() ); 
+      }
+
+     return point.within(polygon);
+  }
+  
+  
+  protected List<String> findDevicesToSend(Message message,  List<String> regIds )
+  {
+	  List<String> regIdsForMessage = new ArrayList<String>();
+		
+  		String coordinateStr = message.getData().get("coordinates");//coordinates
+  		
+  		String magnitudeStr = message.getData().get("magnitude");  		
+  		
+  		String messageContent = message.getData().get("content");  
+  		
+  		logger.warning(" Content = " + messageContent +", Coordinates = "+ coordinateStr + ", Magnitude =  " + magnitudeStr);
+  		
+  		if(coordinateStr == null )
+  		{
+  			try {
+				JSONObject contentJson = new JSONObject(messageContent);
+				
+				coordinateStr = contentJson.getString("coordinates");
+				logger.warning(" Coordinates [ replaced by content ] = " + coordinateStr );
+				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+  		}
+  		
+  		Double minMagnitudeForMessage = RegisterServlet.MIN_MAGNITUDE_DEFAULT;
+  		
+  		if(minMagnitudeForMessage != null)
+  		{
+  			minMagnitudeForMessage = Double.parseDouble(magnitudeStr);
+  		}
+  		
+  		for(String aRegId : regIds)
+  		{
+  			JSONObject ploygonJson = Datastore.getPolygon(aRegId);
+  			
+  			if (ploygonJson != null && ploygonJson.names() != null && ploygonJson.names().length() > 0)
+  			{  			
+	  			Polygon ploygon =  createPolygon(ploygonJson);
+	  			
+	  			Double minMagnitudeForDevice = Datastore.getMinMagnitude(aRegId);
+	  			
+	  			/**
+	  			 * only send devices within a specified region
+	  			 */
+	  			if(isLocationWithinPolygonBounds(ploygon,coordinateStr))
+	  			{
+	  				/**
+	  				 * only messages significant more than minimum magnitude for the device
+	  				 */
+	  				if(minMagnitudeForDevice <=  minMagnitudeForMessage)
+	  				{
+	  					logger.warning(" adding device to send the message "  + message.toString());
+	  					regIdsForMessage.add(aRegId);
+	  				}
+	  				else{
+	  					logger.warning(" message maginitude not significant to device " );
+	  				}
+	  			}
+	  			else
+	  			{
+	  				logger.warning(" message location not within polygon " );
+	  			}
+  			}
+  		}
+	  return regIdsForMessage;
+  }
+  
   private void sendMulticastMessage(String multicastKey,
       HttpServletResponse resp) {
     // Recover registration ids from datastore
     List<String> regIds = Datastore.getMulticast(multicastKey);
-   // Message message = createMessage();
+
     List<Message> messages = createMessages();
+    
+    logger.warning( "sendMulticastMessage : Devices = " + ((regIds!= null) ? regIds.size() : 0 ) 
+    				+ " , Messages = " +((messages!= null) ? messages.size() : 0 ) );
+           
     MulticastResult multicastResult = null;
     try {
-    	for(Message message : messages)
+    	if(regIds != null && regIds.size() > 0)
     	{
-    		logger.warning("FIXME: handle errors here");
-    		multicastResult = sender.sendNoRetry(message, regIds);
+    		if(messages != null && messages.size() > 0)
+    		{
+		    	for(Message message : messages)
+		    	{
+		    		//logger.warning("FIXME: handle errors here");
+		    		List<String> regIdsFound = findDevicesToSend(message,regIds);
+		    		if(regIdsFound != null && regIdsFound.size() > 0)
+		    		{
+		    			logger.warning( "calling gcm sender with message : " + message.toString() + " for " + regIdsFound.size() + " device[s] " );
+		    			multicastResult = sender.sendNoRetry(message,regIdsFound );
+		    		}
+		    		else
+		    		{
+		    			logger.warning( "No valid devices found to send the message : " + message.toString());
+		    		}
+		    	}
+    		}
+    		else
+    		{
+    			logger.warning( "No messages to send");
+    		}
+    	}
+    	else
+    	{
+    		logger.warning( "No devices to send messages ");
     	}
     } catch (IOException e) {
     	logger.warning( "Exception posting " + messages);

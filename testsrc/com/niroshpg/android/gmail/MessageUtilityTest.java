@@ -1,16 +1,13 @@
 package com.niroshpg.android.gmail;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Map;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -42,6 +39,10 @@ public class MessageUtilityTest {
 		        Type type = new TypeToken<Map<String, String>>(){}.getType();
 		        Map<String, String> map = gson.fromJson(extractedData, type);
 		        assertTrue(map.get("magnitude").contains("5.0"));
+		        assertTrue(map.get("coordinates").contains("11.434S"));
+		        System.out.print("coordinates : " + map.get("coordinates"));
+		        
+		        assertTrue(map.get("coordinates").contains("163.240E"));
 		        
 
 		        

@@ -40,13 +40,17 @@ import com.google.appengine.labs.repackaged.org.json.JSONObject;
 public class RegisterServlet extends BaseServlet {
 	  
   private static final String PARAMETER_REG_ID = "regId";
+  
+  public static final Double MIN_MAGNITUDE_DEFAULT = 5.0;
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException {
 	  logger.warning(" start registering doPost");
-    String regId = getParameter(req, PARAMETER_REG_ID);
-    logger.warning(" start registering " + regId);
+	  
+	  String regId = null;
+    //String regId = getParameter(req, PARAMETER_REG_ID);
+   // logger.warning(" start registering " + regId);
     
     
     StringBuffer jb = new StringBuffer();
@@ -60,14 +64,27 @@ public class RegisterServlet extends BaseServlet {
     } catch (Exception e) { /*report an error*/ }
 
     logger.warning(" start registering : jb append completed" );
-    JSONObject jsonObject = null;
+    JSONObject polygonJsonObject = null;
+    
+    Double minMagnitude = MIN_MAGNITUDE_DEFAULT; // default
+    
       try {
     	  String encodeStr = new String(jb.toString().getBytes(), "UTF-8");
-    	  logger.warning(" start registering : encodeStr = " + encodeStr );
+    	  //logger.warning(" start registering : encodeStr = " + encodeStr );
     	  String decodeStr = URLDecoder.decode(encodeStr,"UTF-8");
-    	  logger.warning(" start registering : decodeStr = " + decodeStr );
-		 jsonObject = new JSONObject(decodeStr);
-		 logger.warning(" start registering : from json regId = " + jsonObject.getString("regId"));
+    	 // logger.warning(" start registering : decodeStr = " + decodeStr );
+    	  JSONObject decodedJsonObj = new JSONObject(decodeStr);
+    	  
+		 polygonJsonObject = decodedJsonObj.getJSONObject("polygon");
+		 Double minM = decodedJsonObj.getDouble("minMagnitude");
+		 if(minM != null)
+		 {
+			 minMagnitude = minM;
+		 }
+
+		 logger.warning(" start registering : from json regId = " + decodedJsonObj.getString("regId")
+				 + ", minM = "  + minMagnitude);
+		 regId = decodedJsonObj.getString("regId");
 	} catch (JSONException e) {
 		// TODO Auto-generated catch block
 		 logger.warning(" start registering :json error : " + e.getMessage() );
@@ -78,7 +95,7 @@ public class RegisterServlet extends BaseServlet {
 		e.printStackTrace();
 	}
   
-      if(jsonObject == null)
+      if(polygonJsonObject == null)
       {
     	  logger.warning(" start registering : could not read json data");
       }
@@ -89,8 +106,14 @@ public class RegisterServlet extends BaseServlet {
     // JSONObject nestedObj = jsonObject.getJSONObject("nestedObjName");
     // JSONArray arr = jsonObject.getJSONArray("arrayParamName");
     // etc...
-    
-    Datastore.register(regId);    
+    if(regId != null && regId.length() >0)
+    {
+    	Datastore.register(regId, polygonJsonObject,minMagnitude);
+    }
+    else
+    {
+    	 logger.warning(" regId not found or invalid");
+    }
     setSuccess(resp);
   }
 

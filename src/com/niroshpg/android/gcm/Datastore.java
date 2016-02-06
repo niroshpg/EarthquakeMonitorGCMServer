@@ -24,8 +24,12 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
+import com.google.appengine.labs.repackaged.org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +50,11 @@ public final class Datastore {
   private static final String USERID_TYPE = "UserId";
   private static final String MESSAGE_CONTENT_PROPERTY = "messageContent";
   private static final String DEVICE_REG_ID_PROPERTY = "regId";
+  private static final String DEVICE_MIN_MAG_PROPERTY = "minMagnitude";
   private static final String USERID_CONTENT_PROPERTY = "userIdContent";
+  
+  private static final String POLYGON_TYPE = "Polygon";
+  private static final String COORD_PROPERTY = "PolygonCoordinates";
 
   private static final String MULTICAST_TYPE = "Multicast";
   private static final String MULTICAST_REG_IDS_PROPERTY = "regIds";
@@ -59,6 +67,8 @@ public final class Datastore {
   private static final DatastoreService datastore =
       DatastoreServiceFactory.getDatastoreService();
 
+
+
   private Datastore() {
     throw new UnsupportedOperationException();
   }
@@ -67,19 +77,32 @@ public final class Datastore {
    * Registers a device.
    *
    * @param regId device's registration id.
+   * @param minMagnitude 
    */
-  public static void register(String regId) {
+  public static void register(String regId,JSONObject polygonObj, Double minMagnitude) {
     logger.warning("Registering " + regId);
     Transaction txn = datastore.beginTransaction();
     try {
-      Entity entity = findDeviceByRegId(regId);
-      if (entity != null) {
+    	/**
+    	 * Save device
+    	 */
+      Entity deviceToBeRegistered = findDeviceByRegId(regId);
+      if (deviceToBeRegistered != null) {
         logger.warning(regId + " is already registered; ignoring.");
         return;
       }
-      entity = new Entity(DEVICE_TYPE);
-      entity.setProperty(DEVICE_REG_ID_PROPERTY, regId);
-      datastore.put(entity);
+      deviceToBeRegistered = new Entity(DEVICE_TYPE);
+      deviceToBeRegistered.setProperty(DEVICE_REG_ID_PROPERTY, regId);
+      deviceToBeRegistered.setProperty(DEVICE_MIN_MAG_PROPERTY, minMagnitude);      
+      datastore.put(deviceToBeRegistered);
+      
+      /**
+       * save polygon
+       */
+      Entity polygon = new Entity(POLYGON_TYPE,deviceToBeRegistered.getKey());
+      polygon.setProperty(COORD_PROPERTY, new Text(polygonObj.toString()));
+      datastore.put(polygon);
+      
       txn.commit();
     } finally {
     	logger.warning("Registering " + regId + "[finally]");
@@ -310,7 +333,50 @@ public final class Datastore {
     }
     return entity;
   }
+  
+  private static Entity findPolygonByRegId(String regId) {
+	  Query deviceQuery = new Query(DEVICE_TYPE)
+	  .setFilter(new Query.FilterPredicate(DEVICE_REG_ID_PROPERTY,
+	                                 FilterOperator.EQUAL,
+	                                 regId));
 
+	    PreparedQuery pDeviceQuery = datastore.prepare(deviceQuery);
+		Entity device = pDeviceQuery.asSingleEntity();
+  
+	    Query polygonQuery = new Query(POLYGON_TYPE)
+	        .setAncestor(device.getKey());
+	    PreparedQuery pPolygonQuery = datastore.prepare(polygonQuery);
+	    Entity polygon = pPolygonQuery.asSingleEntity();	
+	    return polygon;
+	  }
+
+  
+  public static JSONObject getPolygon(String regId)
+  {
+	  Entity polygonEntity = null;
+	  JSONObject polygonJson = new JSONObject();
+	  	  
+	  polygonEntity = findPolygonByRegId(regId);
+	  
+	  if(polygonEntity != null)
+	  {
+		  try {
+			  Text polygonText = (Text) polygonEntity.getProperty(COORD_PROPERTY);
+			  polygonJson = new JSONObject(polygonText.getValue());
+		} catch (JSONException e) {
+			logger.severe( "json exception , could not read polygon from datastore " + regId);
+			e.printStackTrace();
+		}
+	  }
+	  else
+	  {
+		  logger.severe( "could not find polygon for device " + regId);
+	  }
+	  	  
+	  return polygonJson;
+	  
+  }
+  
   /**
    * Creates a persistent record with the devices to be notified using a
    * multicast message.
@@ -411,5 +477,24 @@ public final class Datastore {
       }
     }
   }
+
+public static Double getMinMagnitude(String aRegId) {
+	
+	Double minMagnitude = RegisterServlet.MIN_MAGNITUDE_DEFAULT;
+	  Query deviceQuery = new Query(DEVICE_TYPE)
+	  .setFilter(new Query.FilterPredicate(DEVICE_REG_ID_PROPERTY,
+	                                 FilterOperator.EQUAL,
+	                                 aRegId));
+
+	    PreparedQuery pDeviceQuery = datastore.prepare(deviceQuery);
+		Entity device = pDeviceQuery.asSingleEntity();
+		
+		if(device != null)
+		{
+			minMagnitude = (Double) device.getProperty(DEVICE_MIN_MAG_PROPERTY);
+		}
+		
+	return minMagnitude;
+}
 
 }

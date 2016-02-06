@@ -17,29 +17,29 @@
   "canonicalName": null, 
   "files": [
     {
-      "downloadUrl": "/downloads/gmail/v1/30/java/1.18.0-rc/google-api-services-gmail-v1-rev30-1.18.0-rc.jar", 
-      "path": "google-api-services-gmail-v1-rev30-1.18.0-rc.jar", 
+      "downloadUrl": "/downloads/gmail/v1/36/java/1.18.0-rc/google-api-services-gmail-v1-rev36-1.18.0-rc.jar", 
+      "path": "google-api-services-gmail-v1-rev36-1.18.0-rc.jar", 
       "type": "binary", 
-      "timestamp": "2015-05-29 07:14"
+      "timestamp": "2016-01-12 01:42"
     }, 
     {
-      "downloadUrl": "/downloads/gmail/v1/30/java/1.18.0-rc/google-api-services-gmail-v1-rev30-1.18.0-rc-javadoc.jar", 
-      "path": "google-api-services-gmail-v1-rev30-1.18.0-rc-javadoc.jar", 
+      "downloadUrl": "/downloads/gmail/v1/36/java/1.18.0-rc/google-api-services-gmail-v1-rev36-1.18.0-rc-javadoc.jar", 
+      "path": "google-api-services-gmail-v1-rev36-1.18.0-rc-javadoc.jar", 
       "type": "documentation", 
-      "timestamp": "2015-05-29 07:14"
+      "timestamp": "2016-01-12 01:42"
     }, 
     {
-      "downloadUrl": "/downloads/gmail/v1/30/java/1.18.0-rc/google-api-services-gmail-v1-rev30-1.18.0-rc-sources.jar", 
-      "path": "google-api-services-gmail-v1-rev30-1.18.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/gmail/v1/36/java/1.18.0-rc/google-api-services-gmail-v1-rev36-1.18.0-rc-sources.jar", 
+      "path": "google-api-services-gmail-v1-rev36-1.18.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2015-05-29 07:53"
+      "timestamp": "2016-01-12 02:58"
     }, 
     {
-      "path": "google-api-services-gmail-v1-rev30-1.18.0-rc.jar.properties", 
+      "path": "google-api-services-gmail-v1-rev36-1.18.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
-  "revision": 30, 
+  "revision": 36, 
   "language": "java", 
   "language_version": "1.18.0-rc", 
   "dependencies": [
